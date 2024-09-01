@@ -1,10 +1,15 @@
 import { CONTRACTS, postVaaSolana } from '@certusone/wormhole-sdk';
 import { NodeWallet } from '@certusone/wormhole-sdk/lib/cjs/solana';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 
 @Injectable()
 export class AppService {
+
+  constructor(
+    @Inject('EVENT_SERVICE') private eventClient: ClientProxy
+  ) {}
 
   async relayDataToSolana(vaa: string) {
 
@@ -32,7 +37,8 @@ export class AppService {
       }
 
       /**
-       * Rest of the code can be taken from Wormhole docs
+       * To add wormhole receive function in solana program
+       * Then add the buying WIF logic in the receive function with conditions to the message received
        */
 
       const program = {};
@@ -45,14 +51,16 @@ export class AppService {
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = new PublicKey(wallet.publicKey);
       const signedTransaction = await wallet.signTransaction(transaction);
-      // const txid = await connection.sendRawTransaction(signedTransaction);
+      const txSig = await connection.sendRawTransaction(signedTransaction.serialize());
+      console.log(txSig);
 
     } catch (error) {
       console.log("error", error);
     }
-  }
 
-  getHello(): string {
-    return 'Hello World!';
+    // Sample simulation
+    const sampleSolanaTxSig = "28uLLPGJ7wdRpDhdhJzh4S5SEcCdeCqh659TCDLnDQ1i6jPNtTX8HG9NRnxz5teSP7geeyox3BrcGCwkRPKDrXH9";
+    if (sampleSolanaTxSig)
+      this.eventClient.emit('solana_txn_sig', sampleSolanaTxSig);
   }
 }
