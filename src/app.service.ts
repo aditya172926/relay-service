@@ -19,7 +19,7 @@ export class AppService {
       const wormhole_contracts = CONTRACTS.DEVNET;
       const core_bridge_pid = new PublicKey(wormhole_contracts.solana.core);
       const connection = new Connection("https://api.devnet.solana.com");
-      const secretKey = Uint8Array.from([]);
+      const secretKey = Uint8Array.from([]); //SOLANA_WALLET_SECRETKEY
       const payer = Keypair.fromSecretKey(secretKey);
       const wallet = new NodeWallet(payer);
       const vaaBytes = Buffer.from(payload.vaa);
