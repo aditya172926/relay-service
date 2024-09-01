@@ -8,14 +8,14 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
   imports: [ConfigModule.forRoot()],
   controllers: [AppController],
   providers: [AppService, {
-    provide: 'POLLING_SERVICE',
+    provide: 'EVENT_SERVICE',
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
       return ClientProxyFactory.create({
         transport: Transport.TCP,
         options: {
           host: '127.0.0.1',
-          port: 3001,
+          port: 3000,
         }
       })
     }
