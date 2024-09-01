@@ -11,9 +11,9 @@ export class AppService {
     @Inject('EVENT_SERVICE') private eventClient: ClientProxy
   ) {}
 
-  async relayDataToSolana(vaa: string) {
+  async relayDataToSolana(payload: any) {
 
-    console.log("Relay Data to Solana ", vaa);
+    console.log("Relay Data to Solana ", payload.vaa);
 
     try {
       const wormhole_contracts = CONTRACTS.DEVNET;
@@ -22,7 +22,7 @@ export class AppService {
       const secretKey = Uint8Array.from([]);
       const payer = Keypair.fromSecretKey(secretKey);
       const wallet = new NodeWallet(payer);
-      const vaaBytes = Buffer.from(vaa);
+      const vaaBytes = Buffer.from(payload.vaa);
 
       try {
         await postVaaSolana(
@@ -60,7 +60,11 @@ export class AppService {
 
     // Sample simulation
     const sampleSolanaTxSig = "28uLLPGJ7wdRpDhdhJzh4S5SEcCdeCqh659TCDLnDQ1i6jPNtTX8HG9NRnxz5teSP7geeyox3BrcGCwkRPKDrXH9";
+    const eventData = {
+      sourceTransactionHash: payload.sourceTransactionHash,
+      destinationTransactionHash: sampleSolanaTxSig
+    }
     if (sampleSolanaTxSig)
-      this.eventClient.emit('solana_txn_sig', sampleSolanaTxSig);
+      this.eventClient.emit('solana_txn_sig', eventData);
   }
 }
